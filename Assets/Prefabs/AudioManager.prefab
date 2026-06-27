@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8458055023817189119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2016818844126527985}
+  - component: {fileID: 6990719741551798096}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2016818844126527985
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8458055023817189119}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6990719741551798096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8458055023817189119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d03cf5cecaebee4e9a0d2cf915cc98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  buttonClick: {fileID: 8300000, guid: 3fff321da142d3e44bf0361896a03e07, type: 3}
+  buttonHover: {fileID: 8300000, guid: e1a23304ec1ee324c829caa840d9b1ae, type: 3}
+  levelComplete: {fileID: 8300000, guid: 71dc93c3de140ff49a46dae5b9ce2ad1, type: 3}
+  errorSound: {fileID: 8300000, guid: 47aafc3868354d44485ece81c4ca17f2, type: 3}
+  popupOpen: {fileID: 8300000, guid: 71a22a846f9bfaf4ba54b7351d58e616, type: 3}
+  deviceTurnOff: {fileID: 0}
+  scanSound: {fileID: 0}
+  robotWalk: {fileID: 0}
+  robotMotor: {fileID: 0}
