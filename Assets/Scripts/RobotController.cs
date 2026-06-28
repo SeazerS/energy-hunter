@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class RobotController : MonoBehaviour
 {
-    [Header("Hareket Ayarlarý")]
+    [Header("Walking Settings")]
     public float moveSpeed = 3f;
     public float rotationSpeed = 10f;
 
@@ -10,21 +10,19 @@ public class RobotController : MonoBehaviour
     private CharacterController controller;
 
     [Header("Audio")]
-    public AudioSource walkAudioSource; // Yürüme sesi AudioSource
+    public AudioSource walkAudioSource;
 
     void Start()
     {
-        // Animator bul
         animator = GetComponent<Animator>();
 
-        // DEBUG! ? EKLE
         if (animator != null)
         {
-            Debug.Log("? Animator BULUNDU!");
+            Debug.Log("There is the animator");
         }
         else
         {
-            Debug.LogError("? Animator BULUNAMADI!");
+            Debug.LogError("There is no animator");
         }
 
         // CharacterController
@@ -37,41 +35,31 @@ public class RobotController : MonoBehaviour
             controller.center = new Vector3(0, 0.9f, 0);
         }
 
-        // Baþlangýçta volume yükle ?
         UpdateWalkVolume();
     }
 
     void Update()
     {
-        // HAREKET KÝLÝDÝ KONTROLÜ
         if (GameManager.Instance != null && !GameManager.Instance.canPlayerMove)
         {
-            Debug.Log("?? Hareket kilitli! canPlayerMove = false"); // ? DEBUG! ?
+            Debug.Log("Movemant lock! canPlayerMove = false");
             return;
         }
 
-        Debug.Log("? Hareket aktif! canPlayerMove = true"); // ? DEBUG! (her frame çok olur, kaldýrabilirsin)
+        Debug.Log("Movement active! canPlayerMove = true");
 
         MoveRobot();
 
-        // DEBUG: E tuþu test ? ZATENVARDI
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("?? E tuþuna basýldý!");
 
             if (animator != null)
             {
                 animator.SetTrigger("Interact");
-                Debug.Log("? Interact tetiklendi!");
-            }
-            else
-            {
-                Debug.LogError("? Animator yok, tetiklenemedi!");
             }
 
         }
 
-        // Yürüme sesi çalarken volume'u güncelle ? EKLE! ?
         if (walkAudioSource != null && walkAudioSource.isPlaying)
         {
             walkAudioSource.volume = AudioManager.masterVolume;
@@ -84,7 +72,6 @@ public class RobotController : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // Kamera bazlý hareket
         Vector3 cameraForward = Camera.main.transform.forward;
         Vector3 cameraRight = Camera.main.transform.right;
         cameraForward.y = 0f;
@@ -94,15 +81,14 @@ public class RobotController : MonoBehaviour
 
         Vector3 moveDirection = (cameraForward * vertical) + (cameraRight * horizontal);
 
-        // Hareket var mý?
         if (moveDirection.magnitude >= 0.1f)
         {
             moveDirection.Normalize();
 
-            // Hareket et
+            //Movemant
             controller.Move(moveDirection * moveSpeed * Time.deltaTime);
 
-            // Dönüþ
+            //Rotation
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
@@ -113,7 +99,6 @@ public class RobotController : MonoBehaviour
             // Animasyon: Walk
             if (animator != null)
             {
-                Debug.Log("?? isWalking = TRUE"); // ? DEBUG EKLE!
                 animator.SetBool("isWalking", true);
             }
         }
@@ -126,32 +111,28 @@ public class RobotController : MonoBehaviour
             }
         }
 
-        // Yerçekimi
+        //Gravity
         controller.Move(Vector3.down * 2f * Time.deltaTime);
     }
 
     void LateUpdate()
     {
-        // AudioManager'dan master volume'u al ve uygula ? YENÝ! ?
         if (walkAudioSource != null)
         {
             walkAudioSource.volume = AudioManager.masterVolume;
         }
     }
 
-    // YENÝ FONKSÝYON! ?
     public void UpdateWalkVolume()
     {
         if (walkAudioSource != null)
         {
-            // AudioManager'dan volume al
             float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
             float volumeMultiplier = 3f;
             float finalVolume = savedVolume * volumeMultiplier;
             finalVolume = Mathf.Clamp(finalVolume, 0f, 1f);
 
             walkAudioSource.volume = finalVolume;
-            Debug.Log("?? Yürüme sesi güncellendi: " + walkAudioSource.volume);
         }
     }
 }

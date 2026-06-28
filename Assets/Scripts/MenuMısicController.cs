@@ -10,14 +10,11 @@ public class MenuMusicController : MonoBehaviour
         {
             musicSource = GetComponent<AudioSource>();
         }
-
-        // İlk volume'u ayarla
         UpdateVolume();
     }
 
     void Update()
     {
-        // Sürekli master volume'u uygula ✅
         UpdateVolume();
     }
 

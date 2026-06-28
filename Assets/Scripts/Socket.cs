@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class Socket : MonoBehaviour
 {
-    [Header("Baðlý Cihaz")]
+    [Header("Connected Device")]
     public GameObject connectedDevice;
 
-    [Header("Cihaz Bilgileri")]
+    [Header("Device Information")]
     public string deviceName = "Lamba";
     public float kWhSavings = 15f;
 
-    [Header("Durum")]
+    [Header("Statu")]
     public bool isOn = true;
 
     public void TurnOff()
@@ -18,29 +18,11 @@ public class Socket : MonoBehaviour
         {
             isOn = false;
 
-            Debug.Log("?? " + deviceName + " kapatýlýyor!"); // ? DEBUG
-
-            // Light component bul ve söndür
             Light lightComponent = connectedDevice.GetComponent<Light>();
             if (lightComponent != null)
             {
                 lightComponent.enabled = false;
-                Debug.Log("?? Light söndürüldü!");
             }
-            else
-            {
-                Debug.LogWarning("?? Light component bulunamadý!");
-            }
-
-            Debug.Log("? " + deviceName + " kapatýldý! +" + kWhSavings + " kWh");
-        }
-        else if (!isOn)
-        {
-            Debug.Log("? " + deviceName + " zaten kapalý!");
-        }
-        else
-        {
-            Debug.LogError("? Connected Device baðlý deðil!");
         }
     }
 
@@ -51,6 +33,6 @@ public class Socket : MonoBehaviour
 
     public string GetDeviceInfo()
     {
-        return deviceName + "\n" + kWhSavings + " kWh tasarruf";
+        return deviceName + "\n" + kWhSavings + " kWh saving";
     }
 }

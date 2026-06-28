@@ -9,10 +9,10 @@ public class HelpManager : MonoBehaviour
     public Button closeButton;
 
     [Header("First Time")]
-    public bool forceOpenOnStart = true; // Ýlk açýlýþta zorla aç
-    public HelpButtonPulse buttonPulse; // Pulse script referansý
+    public bool forceOpenOnStart = true;
+    public HelpButtonPulse buttonPulse;
 
-    [Header("Audio (Ýsteðe Baðlý)")]
+    [Header("Audio")]
     public AudioClip openSound;
     public AudioClip closeSound;
 
@@ -21,15 +21,11 @@ public class HelpManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("? HelpManager.Start() çalýþtý");
-
-        // Panel baþlangýçta kapalý
         if (helpPanel != null)
         {
             helpPanel.SetActive(false);
         }
 
-        // Buton eventleri
         if (helpButton != null)
         {
             helpButton.onClick.AddListener(OnHelpButtonClick);
@@ -40,11 +36,9 @@ public class HelpManager : MonoBehaviour
             closeButton.onClick.AddListener(CloseHelpPanel);
         }
 
-        // ÝLK KEZ MÝ KONTROL ET ?
         if (PlayerPrefs.GetInt("HelpOpened", 0) == 0 && forceOpenOnStart)
         {
             isFirstTime = true;
-            //Invoke("OpenHelpPanel", 1f); // 1 saniye sonra otomatik aç
         }
 
 
@@ -52,13 +46,12 @@ public class HelpManager : MonoBehaviour
 
     void Update()
     {
-        // H tuþu ile de açýlabilir (opsiyonel)
         if (Input.GetKeyDown(KeyCode.H))
         {
             ToggleHelpPanel();
         }
 
-        // ESC ile kapat (sadece help açýksa)
+        //Close the ESC
         if (Input.GetKeyDown(KeyCode.Escape) && helpPanel != null && helpPanel.activeSelf)
         {
             CloseHelpPanel();
@@ -67,39 +60,28 @@ public class HelpManager : MonoBehaviour
 
     void OnHelpButtonClick()
     {
-        Debug.Log("? Help butonu TIKlandý!"); // ? DEBUG! ?
 
-        Debug.Log("? Cursor visible: " + Cursor.visible); // ? DEBUG! ?
-        Debug.Log("? Cursor lockState: " + Cursor.lockState); // ? DEBUG! ?
-
-        // SES ÇAL! ? YENÝ! ?
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayButtonClick();
         }
 
-        // OK'U GÝZLE - HER ZAMAN! ? DÜZELTME! ?
         GameObject arrow = GameObject.Find("ArrowIndicator");
         if (arrow != null)
         {
             arrow.SetActive(false);
-            Debug.Log("?? Ok gizlendi");
         }
 
-        // PULSE DURDUR (ilk týklamada) ? ZATEN VAR ?
         if (buttonPulse != null)
         {
             buttonPulse.StopPulse();
-            Debug.Log("?? Pulse durduruldu");
         }
 
         ToggleHelpPanel();
 
-        // ÝLK KEZ ÝSE: Sadece kayýt
         if (isFirstTime)
         {
-            // Ok ve pulse zaten yukarýda durduruldu ?
-            Debug.Log("? Ýlk týklama kaydedildi");
+            Debug.Log("First click");
         }
     }
 
@@ -126,20 +108,14 @@ public class HelpManager : MonoBehaviour
         {
             helpPanel.SetActive(true);
 
-            // Cursor göster
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
-            // Oyunu DURDUR (isteðe baðlý)
-            // Time.timeScale = 0f;
-
-            // Ses çal
             if (openSound != null && AudioManager.Instance != null)
             {
                 AudioSource.PlayClipAtPoint(openSound, Camera.main.transform.position);
             }
 
-            Debug.Log("? Help paneli açýldý");
         }
     }
 
@@ -149,48 +125,31 @@ public class HelpManager : MonoBehaviour
         {
             helpPanel.SetActive(false);
 
-            // Ýlk kez kapatýldý, kaydet
             if (isFirstTime)
             {
                 PlayerPrefs.SetInt("HelpOpened", 1);
                 PlayerPrefs.Save();
                 isFirstTime = false;
-
-                Debug.Log("? Help ilk kez kapatýldý, bir daha otomatik açýlmayacak");
             }
 
-            // ÝLK SCAN'Ý BAÞLAT! ? YENÝ! ?
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.StartFirstScan();
-                Debug.Log("? Help kapatýldý, ilk scan tetiklendi");
             }
 
-            // Hareket aç
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.EnablePlayerMovement();
             }
 
-
-            Debug.Log("? Help ilk kez kapatýldý");
-
-            // Cursor gizle (oyun devam ediyorsa)
-            //Cursor.visible = false;
-            //Cursor.lockState = CursorLockMode.Locked;
-
-            // CURSOR KÝLÝTLE! ? YENÝ! ?
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-            Debug.Log("?? Cursor kilitlendi, oyun baþladý!");
 
-            // Ses çal
+            //Play Sound
             if (closeSound != null && AudioManager.Instance != null)
             {
                 AudioSource.PlayClipAtPoint(closeSound, Camera.main.transform.position);
             }
-
-            Debug.Log("? Help paneli kapandý");
         }
     }
 }

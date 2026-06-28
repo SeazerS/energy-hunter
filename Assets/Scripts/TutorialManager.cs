@@ -37,14 +37,10 @@ public class TutorialManager : MonoBehaviour
             tutorialPanel.SetActive(true);
             tutorialText.text = tutorialMessages[currentStep];
 
-            // Oyunu durdur
             Time.timeScale = 0f;
 
-            // Mouse'u göster
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-
-            Debug.Log("Tutorial adým: " + (currentStep + 1));
         }
         else
         {
@@ -57,7 +53,6 @@ public class TutorialManager : MonoBehaviour
         currentStep++;
         ShowTutorial();
 
-        // Ses çal
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayButtonClick();
@@ -69,13 +64,10 @@ public class TutorialManager : MonoBehaviour
         tutorialPanel.SetActive(false);
         tutorialActive = false;
 
-        // Oyunu devam ettir
         Time.timeScale = 1f;
 
-        // Mouse'u gizle (oyun için)
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        Debug.Log("? Tutorial tamamlandý!");
     }
 }

@@ -16,32 +16,32 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI timeText;
 
     [Header("Scan Ability")]
-    public int initialScanUses = 2; // Inspector'dan ayarla (Ev: 2, Okul: 4)
-    public float autoScanDuration = 10f; // YENÝ! Ýlk otomatik scan süresi
-    public float manualScanDuration = 3f; // TAB scan süresi
-                                          // public float scanDuration = 10f;
-    public TextMeshProUGUI scanTimerText; // Countdown UI
-    public TextMeshProUGUI scanHintText; // TAB: Tekrar Tara
+    public int initialScanUses = 2;
+    public float autoScanDuration = 10f;
+    public float manualScanDuration = 3f;
+                                         
+    public TextMeshProUGUI scanTimerText;
+    public TextMeshProUGUI scanHintText;
     public AudioClip scanSound;
 
-    [Header("Skor")]
+    [Header("Score")]
     private int closedDevices = 0;
     public int totalDevices = 8;
     private float totalKWh = 0f;
 
-    [Header("Süre")]
+    [Header("Time")]
     private float gameTime = 0f;
     private bool gameActive = true;
 
     [Header("Game State")]
-    public bool canPlayerMove = false; // 
+    public bool canPlayerMove = false; 
 
 
-    // SCAN KONTROL 
+    // SCAN Control
     private bool scanActive = false;
     private float scanTimer = 0f;
-    private int scanUsesLeft; // 2 kere kullanýlabilir (baþlangýç + 1 TAB)
-    private bool isFirstScan = true; //  Ýlk scan mý???
+    private int scanUsesLeft;
+    private bool isFirstScan = true;
 
     void Awake()
     {
@@ -62,53 +62,41 @@ public class GameManager : MonoBehaviour
             levelCompletePanel.SetActive(false);
         }
 
-        // SÜRE RESET EKLE
+        //Time Reset
         gameTime = 0f;
         gameActive = true;
 
-        // HAREKET KÝLÝTLÝ BAÞLA!
         canPlayerMove = false;
-
-
-        // Scan hakkýný ayarla 
+ 
         scanUsesLeft = initialScanUses;
 
         UpdateUI();
-
-        // ANA MENÜ MÜZÝÐÝNÝ DURDUR! 
+ 
         if (AudioManager.Instance != null && AudioManager.Instance.audioSource != null)
         {
             AudioManager.Instance.audioSource.Stop();
-            Debug.Log("?? Ana menü müziði durduruldu");
         }
 
-        // SAHNE KONTROLÜ! 
         string currentScene = SceneManager.GetActiveScene().name;
 
-        Debug.Log("Yüklenen sahne: " + currentScene); // ? DEBUG! 
+        Debug.Log("Yüklenen sahne: " + currentScene);
 
-        if (currentScene == "School_Level") // OKUL SEVÝYESÝ
+        if (currentScene == "School_Level")
         {
-            // OKUL - OTOMATÝK BAÞLAT ?
             canPlayerMove = true;
-            Debug.Log(" canPlayerMove = " + canPlayerMove); // DEBUG! ?
+            Debug.Log(" canPlayerMove = " + canPlayerMove);
 
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
             StartCoroutine(InitialScan());
-
-            Debug.Log(" Okul seviyesi - Otomatik baþladý!");
         }
-        else // EV SEVÝYESÝ (SampleScene)
+        else
         {
-            // EV - HELP BEKLENÝYOR ?
             canPlayerMove = false;
-            Debug.Log("?canPlayerMove = " + canPlayerMove); // ? DEBUG! ?
+            Debug.Log("?canPlayerMove = " + canPlayerMove);
 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-
-            Debug.Log(" Ev seviyesi - Help bekliyor");
         }
     }
 
@@ -126,10 +114,9 @@ public class GameManager : MonoBehaviour
                 // Countdown UI
                 if (scanTimerText != null)
                 {
-                    scanTimerText.text = "Tarama: " + Mathf.CeilToInt(scanTimer).ToString() + "s";
+                    scanTimerText.text = "Scanning: " + Mathf.CeilToInt(scanTimer).ToString() + "s";
                 }
 
-                // Süre bitti mi?
                 if (scanTimer <= 0f)
                 {
                     EndScan();
@@ -137,7 +124,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // TAB ÝLE TEKRAR KULLAN (1 kere hak varsa)
         if (Input.GetKeyDown(KeyCode.Tab) && scanUsesLeft > 0 && !scanActive && gameActive)
         {
             ActivateScan();
@@ -146,12 +132,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator InitialScan()
     {
-        Debug.Log("Oyun baþladý - Ýlk scan 1 saniye sonra!");
-
-        // 1 saniye bekle (oyun yüklenmesi için)
         yield return new WaitForSeconds(1f);
 
-        // Ýlk scan'i baþlat
+        // First Scan
         ActivateScan();
     }
 
@@ -159,29 +142,25 @@ public class GameManager : MonoBehaviour
     {
         if (scanActive || scanUsesLeft <= 0) return;
 
-        Debug.Log("Scan baþladý!(Kalan hak: " + (scanUsesLeft - 1) + ")");
-
         scanActive = true;
         //scanTimer = scanDuration;
 
-        // ÝLK SCAN 
+        // First SCAN 
         if (isFirstScan)
         {
-            scanTimer = autoScanDuration; // Ýlk scan uzun
+            scanTimer = autoScanDuration;
             isFirstScan = false;
-            Debug.Log("? Otomatik scan: " + autoScanDuration + " saniye");
         }
         else
         {
-            scanTimer = manualScanDuration; // TAB scan kýsa
-            Debug.Log("? Manuel scan: " + manualScanDuration + " saniye");
+            scanTimer = manualScanDuration; // TAB scan
         }
 
-        scanUsesLeft--; // Hak azalt
+        scanUsesLeft--;
                         
 
 
-        // TÜM GLOWLARI GÖSTER
+        //Show All glows
 
         ShowAllGlows();
 
@@ -190,19 +169,19 @@ public class GameManager : MonoBehaviour
             AudioManager.Instance.PlayScan();
         }
 
-        // Ses efekti
+        //Sound effect
         if (scanSound != null)
         {
             AudioSource.PlayClipAtPoint(scanSound, Camera.main.transform.position);
         }
 
-        // Timer UI göster
+        //Show Timer UI
         if (scanTimerText != null)
         {
             scanTimerText.gameObject.SetActive(true);
         }
 
-        // Hint UI güncelle
+        // Hint UI
         UpdateScanHint();
 
 
@@ -214,22 +193,19 @@ public class GameManager : MonoBehaviour
     {
         scanActive = false;
 
-        // TÜM GLOW'LARI GÝZLE (yeþiller de!)
         HideAllGlows();
 
-        // Timer UI gizle
         if (scanTimerText != null)
         {
             scanTimerText.gameObject.SetActive(false);
         }
 
-        // Hint UI güncelle
+        // Hint UI
         UpdateScanHint();
     }
 
     void ShowAllGlows()
     {
-        // TÜM cihazlarýn glow'larýný göster
         InteractableDevice[] devices = FindObjectsOfType<InteractableDevice>();
 
         foreach (InteractableDevice device in devices)
@@ -239,13 +215,10 @@ public class GameManager : MonoBehaviour
                 device.glowIndicator.SetActive(true);
             }
         }
-
-        Debug.Log("?? " + devices.Length + " cihazýn glow'u gösterildi!");
     }
 
     void HideAllGlows()
     {
-        // TÜM glow'larý gizle (yeþiller de!)
         InteractableDevice[] devices = FindObjectsOfType<InteractableDevice>();
 
         foreach (InteractableDevice device in devices)
@@ -255,26 +228,22 @@ public class GameManager : MonoBehaviour
                 device.glowIndicator.SetActive(false);
             }
         }
-
-        Debug.Log("TÜM glow'lar gizlendi!");
     }
 
     void UpdateScanHint()
     {
-        // Hint UI güncelle 
         if (scanHintText != null)
         {
             if (scanUsesLeft > 0 && !scanActive)
             {
-                scanHintText.text = "[TAB] Tekrar Tara (" + scanUsesLeft + " kere kaldý)";
+                scanHintText.text = "[TAB] Yeniden tara (" + scanUsesLeft + " kaldý.)";
                 scanHintText.gameObject.SetActive(true);
             }
             else if (scanUsesLeft <= 0)
             {
-                scanHintText.text = "Tarama hakký bitti";
+                scanHintText.text = "Tarama bitti.";
                 scanHintText.gameObject.SetActive(true);
 
-                // 3 saniye sonra gizle
                 StartCoroutine(HideHintAfterDelay(3f));
             }
             else
@@ -299,14 +268,13 @@ public class GameManager : MonoBehaviour
         closedDevices++;
         totalKWh += kWh;
 
-        Debug.Log("Kapatýlan: " + closedDevices + "/" + totalDevices);
+        Debug.Log("Kapatýldý: " + closedDevices + "/" + totalDevices);
         Debug.Log("Toplam: " + totalKWh + " kWh");
 
         UpdateUI();
 
         if (closedDevices >= totalDevices)
         {
-            Debug.Log("SEVÝYE TAMAMLANDI!");
             LevelComplete();
         }
     }
@@ -315,8 +283,8 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Kapatýlan: " + closedDevices + "/" + totalDevices +
-                           "\nTasarruf: " + totalKWh.ToString("F0") + " kWh";
+            scoreText.text = "Kapatýldý: " + closedDevices + "/" + totalDevices +
+                           "\nKorundu: " + totalKWh.ToString("F0") + " kWh";
         }
     }
 
@@ -328,16 +296,14 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // HAREKET KÝLÝTLE!
+        //Lock the movemant!
         canPlayerMove = false;
-        Debug.Log("?? Level Complete: Hareket kilitlendi");
 
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
         }
 
-        // BAÞARI SESÝ 
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayLevelComplete();
@@ -348,20 +314,17 @@ public class GameManager : MonoBehaviour
 
         if (energyText != null)
         {
-            energyText.text = totalKWh.ToString("F0") + " kWh tasarruf";
+            energyText.text = totalKWh.ToString("F0") + " kWh korundu";
         }
 
         if (timeText != null)
         {
-            timeText.text = "\nSüre: " + minutes + ":" + seconds.ToString("00");
+            timeText.text = "\nZaman: " + minutes + ":" + seconds.ToString("00");
         }
-
-        Debug.Log("?? Level Complete ekraný gösterildi!");
     }
 
     public void RestartLevel()
     {
-        Debug.Log("?? Seviye yeniden baþlatýlýyor...");
         Time.timeScale = 1f;
 
         if (FadeManager.Instance != null)
@@ -382,7 +345,6 @@ public class GameManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        Debug.Log("?? Ana menüye dönülüyor...");
         Time.timeScale = 1f;
 
         if (FadeManager.Instance != null)
@@ -403,35 +365,25 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        Debug.Log("?? Sonraki seviye yükleniyor...");
-
         Time.timeScale = 1f;
 
-        // FADE ÝLE GEÇIÞ!
         if (FadeManager.Instance != null)
         {
             StartCoroutine(LoadNextLevelWithFade());
         }
         else
         {
-            // Fade yoksa direkt yükle
             LoadNextLevelDirect();
         }
     }
 
-    // YENÝ FONKSÝYON - Fade ile yükleme
     IEnumerator LoadNextLevelWithFade()
     {
-        // Fade In (kararýr)
         yield return FadeManager.Instance.FadeIn();
 
-        // Sahne yükle
         LoadNextLevelDirect();
-
-        // NOT: Fade Out yeni sahne baþladýðýnda FadeManager.Awake() içinde otomatik olur
     }
 
-    // YENÝ FONKSÝYON - Direkt yükleme
     void LoadNextLevelDirect()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
@@ -440,26 +392,21 @@ public class GameManager : MonoBehaviour
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {
             SceneManager.LoadScene(nextSceneIndex);
-            Debug.Log("? Seviye " + nextSceneIndex + " yüklendi");
         }
         else
         {
-            Debug.Log("?? Tüm seviyeler tamamlandý!");
             SceneManager.LoadScene("MainMenu");
         }
     }
 
     public void StartFirstScan()
     {
-        Debug.Log("?? Help paneli kapandý, ilk scan baþlýyor!");
         StartCoroutine(InitialScan());
     }
 
-    // HelpManager'dan çaðrýlacak (hareket açma) 
     public void EnablePlayerMovement()
     {
         canPlayerMove = true;
-        Debug.Log("? Oyuncu hareketi etkinleþtirildi!");
     }
 
 }

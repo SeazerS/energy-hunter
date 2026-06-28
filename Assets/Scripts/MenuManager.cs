@@ -6,23 +6,18 @@ public class MenuManager : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log("? MenuManager baþlatýldý");
-
-        // Cursor göster
+        // Show the Cursor
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // ANA MENÜ MÜZÝÐÝNÝ BAÞLAT! ? YENÝ! ?
         if (AudioManager.Instance != null && AudioManager.Instance.audioSource != null)
         {
-            // Eðer müzik çalmýyorsa baþlat
             if (!AudioManager.Instance.audioSource.isPlaying)
             {
                 AudioManager.Instance.audioSource.Play();
-                Debug.Log("?? Ana menü müziði baþlatýldý");
             }
 
-            // Volume'u ayarla
+            //Settings The Volume
             float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
             AudioManager.Instance.SetMusicVolume(savedVolume);
         }
@@ -30,11 +25,6 @@ public class MenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        Debug.Log("?? StartGame çaðrýldý!");
-
-        
-
-        // Fade ile sahne geçiþi
         if (FadeManager.Instance != null)
         {
             StartCoroutine(PlayGameWithFade());
@@ -42,7 +32,6 @@ public class MenuManager : MonoBehaviour
         else
         {
             SceneManager.LoadScene("SampleScene");
-            Debug.Log("?? Scene yükleniyor: SampleScene"); // ? EKLE! ?
         }
     }
 
@@ -54,7 +43,6 @@ public class MenuManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("?? Oyundan çýkýlýyor...");
         Application.Quit();
 
 #if UNITY_EDITOR

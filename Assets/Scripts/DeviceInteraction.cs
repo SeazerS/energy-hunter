@@ -3,12 +3,12 @@ using TMPro;
 
 public class DeviceInteraction : MonoBehaviour
 {
-    [Header("UI Elemanlarý")]
+    [Header("UI Elements")]
     public GameObject popupPanel;
     public TextMeshProUGUI deviceNameText;
     public TextMeshProUGUI deviceInfoText;
 
-    [Header("Skor")]
+    [Header("Score")]
     public TextMeshProUGUI scoreText;
     private int closedDevices = 0;
     private int totalDevices = 8;
@@ -20,24 +20,16 @@ public class DeviceInteraction : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("? DeviceInteraction baþladý!");
-
         if (popupPanel != null)
-        {
             popupPanel.SetActive(false);
-        }
 
         UpdateScore();
     }
 
     void Update()
     {
-        // Sol týk
         if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("??? Mouse týklandý!"); // ? DEBUG
             CheckClick();
-        }
     }
 
     void CheckClick()
@@ -45,47 +37,14 @@ public class DeviceInteraction : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        Debug.Log("?? Raycast gönderiliyor..."); // ? DEBUG
-
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("? Çarpma: " + hit.collider.name); // ? DEBUG
-            Debug.Log("??? Tag: " + hit.collider.tag); // ? DEBUG
-
-            // Prize týklandý mý?
             if (hit.collider.CompareTag("Socket"))
             {
-                Debug.Log("?? Socket bulundu!"); // ? DEBUG
-
                 Socket socket = hit.collider.GetComponent<Socket>();
-
-                if (socket != null)
-                {
-                    Debug.Log("? Socket component var!"); // ? DEBUG
-
-                    if (socket.IsWasteful())
-                    {
-                        Debug.Log("?? Cihaz gereksiz, popup açýlýyor!"); // ? DEBUG
-                        ShowPopup(socket);
-                    }
-                    else
-                    {
-                        Debug.Log("? Cihaz zaten kapalý!"); // ? DEBUG
-                    }
-                }
-                else
-                {
-                    Debug.LogError("? Socket component YOK!"); // ? DEBUG
-                }
+                if (socket != null && socket.IsWasteful())
+                    ShowPopup(socket);
             }
-            else
-            {
-                Debug.Log("?? Socket deðil, baþka bir þey: " + hit.collider.tag);
-            }
-        }
-        else
-        {
-            Debug.Log("? Hiçbir þeye çarpmadý!"); // ? DEBUG
         }
     }
 
@@ -94,70 +53,42 @@ public class DeviceInteraction : MonoBehaviour
         currentSocket = socket;
 
         if (popupPanel != null)
-        {
             popupPanel.SetActive(true);
-            Debug.Log("?? Popup açýldý!");
-        }
-        else
-        {
-            Debug.LogWarning("?? Popup Panel baðlý deðil!");
-        }
 
         if (deviceNameText != null)
-        {
             deviceNameText.text = socket.deviceName;
-        }
 
         if (deviceInfoText != null)
-        {
-            deviceInfoText.text = "Tasarruf: " + socket.kWhSavings + " kWh\nDurum: Gereksiz açýk";
-        }
+            deviceInfoText.text = "Korundu: " + socket.kWhSavings + " kWh\nDurum: Gerekli kapama.";
     }
 
     public void CloseDevice()
     {
-        if (currentSocket != null)
-        {
-            Debug.Log("?? Cihaz kapatýlýyor..."); // ? DEBUG
+        if (currentSocket == null) return;
 
-            // Animasyon tetikle
-            if (robotAnimator != null)
-            {
-                robotAnimator.SetTrigger("Interact");
-            }
+        if (robotAnimator != null)
+            robotAnimator.SetTrigger("Interact");
 
-            // Cihazý kapat
-            currentSocket.TurnOff();
+        currentSocket.TurnOff();
+        closedDevices++;
+        UpdateScore();
 
-            // Skor artýr
-            closedDevices++;
-            UpdateScore();
+        if (popupPanel != null)
+            popupPanel.SetActive(false);
 
-            // Popup kapat
-            if (popupPanel != null)
-            {
-                popupPanel.SetActive(false);
-            }
-
-            currentSocket = null;
-
-            CheckLevelComplete();
-        }
+        currentSocket = null;
+        CheckLevelComplete();
     }
 
     void UpdateScore()
     {
         if (scoreText != null)
-        {
-            scoreText.text = "Kapatýlan: " + closedDevices + "/" + totalDevices;
-        }
+            scoreText.text = "Kapatýldý: " + closedDevices + "/" + totalDevices;
     }
 
     void CheckLevelComplete()
     {
         if (closedDevices >= totalDevices)
-        {
-            Debug.Log("?? SEVÝYE TAMAMLANDI!");
-        }
+            Debug.Log("Seviye Tamamlandý!");
     }
 }

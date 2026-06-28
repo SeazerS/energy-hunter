@@ -7,8 +7,8 @@ public class FadeManager : MonoBehaviour
     public static FadeManager Instance;
 
     [Header("Fade Panel")]
-    public CanvasGroup fadeCanvasGroup; // FadePanel'in CanvasGroup'u
-    public float fadeDuration = 1f; // Fade süresi (saniye)
+    public CanvasGroup fadeCanvasGroup; 
+    public float fadeDuration = 1f; // Fade Time
 
     void Awake()
     {
@@ -16,7 +16,7 @@ public class FadeManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Sahneler arasý kalýcý
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -24,17 +24,14 @@ public class FadeManager : MonoBehaviour
             return;
         }
 
-        // Baþlangýçta fade açýk (ekran kararýk)
         if (fadeCanvasGroup != null)
         {
-            fadeCanvasGroup.alpha = 1f; // Tam kararýk
+            fadeCanvasGroup.alpha = 1f;
         }
 
-        // Oyun baþladýðýnda fade out yap (açýlýr)
         StartCoroutine(FadeOut());
     }
 
-    // Fade Out: Ekran açýlýr (kararýktan açýða)
     public IEnumerator FadeOut()
     {
         if (fadeCanvasGroup == null) yield break;
@@ -45,18 +42,15 @@ public class FadeManager : MonoBehaviour
 
         while (timer < fadeDuration)
         {
-            timer += Time.unscaledDeltaTime; // Time.timeScale'den baðýmsýz
+            timer += Time.unscaledDeltaTime;
             fadeCanvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
             yield return null;
         }
 
         fadeCanvasGroup.alpha = 0f;
         fadeCanvasGroup.gameObject.SetActive(false);
-
-        Debug.Log("? Fade Out tamamlandý");
     }
 
-    // Fade In: Ekran kararýr (açýktan kararýða)
     public IEnumerator FadeIn()
     {
         if (fadeCanvasGroup == null) yield break;
@@ -68,21 +62,20 @@ public class FadeManager : MonoBehaviour
         while (timer < fadeDuration)
         {
             timer += Time.unscaledDeltaTime;
-            fadeCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / fadeDuration); // ? 1f = TAM OPAK
+            fadeCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / fadeDuration);
             yield return null;
         }
 
-        // SON FRAME TAM 1 OLSUN! ? EKLE
-        fadeCanvasGroup.alpha = 1f; // ? ÖNEMLÝ!
+        fadeCanvasGroup.alpha = 1f;
 
-        Debug.Log("? Fade In tamamlandý (Alpha: " + fadeCanvasGroup.alpha + ")");
+        Debug.Log("? Fade In Complated (Alpha: " + fadeCanvasGroup.alpha + ")");
     }
 
     // Fade In ? Action ? Fade Out
     public IEnumerator FadeInAndOut(System.Action onComplete)
     {
-        yield return FadeIn(); // Kararýr
-        onComplete?.Invoke(); // Action çalýþtýr (sahne yükle)
-        yield return FadeOut(); // Açýlýr
+        yield return FadeIn(); 
+        onComplete?.Invoke(); // Action 
+        yield return FadeOut();
     }
 }

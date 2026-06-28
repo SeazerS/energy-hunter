@@ -39,13 +39,12 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // AudioSource ekle
+        // AudioSource
         audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Start()
     {
-        // Müzik çal
         if (menuMusic != null && audioSource.clip == null)
         {
             audioSource.clip = menuMusic;
@@ -53,23 +52,19 @@ public class AudioManager : MonoBehaviour
             audioSource.Play();
         }
 
-        // MÜZÝK VOLUME YÜKLE
         float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
         SetMusicVolume(savedVolume);
     }
 
-    // Genel ses çalma fonksiyonu
     public void PlaySound(AudioClip clip, float volume = 1f)
     {
         if (clip != null && audioSource != null)
         {
-            // Ana ses ile çarp!
             float finalVolume = volume * AudioListener.volume;
             audioSource.PlayOneShot(clip, finalVolume);
         }
     }
 
-    // UI Ses fonksiyonlarý
     public void PlayButtonClick()
     {
         if (buttonClick != null)
@@ -110,7 +105,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // Game ses fonksiyonlarý
     public void PlayDeviceTurnOff()
     {
         if (deviceTurnOff != null)
@@ -138,20 +132,16 @@ public class AudioManager : MonoBehaviour
         float finalVolume = volume * volumeMultiplier;
         finalVolume = Mathf.Clamp(finalVolume, 0f, 1f);
 
-        // TÜM AUDIOSOURCE
         AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
 
         foreach (AudioSource source in allAudioSources)
         {
             source.volume = finalVolume;
-            Debug.Log("?? " + source.gameObject.name + " ? " + source.volume);
         }
     }
 
-    // TÜM AUDIOSOURCE'LARI GÜNCELLE ? YENÝ! ?
     void UpdateAllAudioSources()
     {
-        // Sahnedeki TÜM AudioSource'larý bul
         AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
 
         foreach (AudioSource source in allAudioSources)
@@ -159,7 +149,7 @@ public class AudioManager : MonoBehaviour
             source.volume = masterVolume;
         }
 
-        Debug.Log("?? " + allAudioSources.Length + " AudioSource güncellendi");
+        Debug.Log(allAudioSources.Length + " AudioSource updated");
     }
 
 }

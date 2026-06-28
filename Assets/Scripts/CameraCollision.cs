@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class CameraCollision : MonoBehaviour
 {
-    [Header("Collision Ayarlarý")]
-    public float minDistance = 1f; // En yakýn mesafe
-    public float maxDistance = 3f; // Normal mesafe
-    public float smoothSpeed = 10f; // Yumuþak geçiþ
+    [Header("Collision Settings")]
+    public float minDistance = 1f;
+    public float maxDistance = 3f; 
+    public float smoothSpeed = 10f;
 
-    [Header("Hedef")]
+    [Header("Target")]
     public Transform target; // Robot
 
     private Vector3 defaultLocalPosition;
@@ -24,10 +24,8 @@ public class CameraCollision : MonoBehaviour
         Vector3 desiredPosition = target.TransformPoint(defaultLocalPosition);
         RaycastHit hit;
 
-        // Robot'tan kameraya raycast
         if (Physics.Raycast(target.position, (desiredPosition - target.position).normalized, out hit, maxDistance))
         {
-            // Duvar var, kamerayý yaklaþtýr
             float distance = Mathf.Clamp(hit.distance, minDistance, maxDistance);
             Vector3 direction = (desiredPosition - target.position).normalized;
             Vector3 newPosition = target.position + direction * distance;
@@ -36,7 +34,6 @@ public class CameraCollision : MonoBehaviour
         }
         else
         {
-            // Duvar yok, normal pozisyon
             transform.localPosition = Vector3.Lerp(transform.localPosition, defaultLocalPosition, Time.deltaTime * smoothSpeed);
         }
     }
